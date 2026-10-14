@@ -21,8 +21,7 @@
     url.search = new URLSearchParams({template:'sighting.yml',date:entry.date || '',brand:entry.brand === 'Unknown' ? '' : data.brands[entry.brand].label});
     return url.href;
   };
-  let limit = 12;
-  let view = 'list';
+  let view = 'calendar';
   const dated = data.entries.filter(entry => entry.date);
   let selectedDate = new URLSearchParams(location.search).get('date') || '';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = '';
@@ -42,13 +41,6 @@
     }
   }
   $('month').value = selectedDate ? selectedDate.slice(0,7) : months.at(-1) || '';
-  $('search').value = new URLSearchParams(location.search).get('q') || '';
-
-  function matches(entry) {
-    const query = $('search').value.trim().toLocaleLowerCase();
-    return (!$('brand').value || entry.brand === $('brand').value) &&
-      (!query || [data.brands[entry.brand].label, ...entry.texts].join(' ').toLocaleLowerCase().includes(query));
-  }
   function badge(entry) {
     const brand = data.brands[entry.brand];
     if (brand.logo) {
@@ -144,9 +136,9 @@
     $('selected-day').hidden = !selectedDate || view !== 'calendar';
     if (!selectedDate) return;
     $('selected-day-title').textContent = 'Sightings on ' + formatDate(selectedDate);
-    const entries = dated.filter(entry => entry.date === selectedDate && matches(entry));
+    const entries = dated.filter(entry => entry.date === selectedDate);
     $('selected-day-results').replaceChildren(...entries.map(card));
-    if (!entries.length) $('selected-day-results').append(el('p', 'No sightings match this date and these search filters. Flight tracks are shown independently of brand filters.', 'small'));
+    if (!entries.length) $('selected-day-results').append(el('p', 'No sighting reports for this date yet.', 'small'));
   }
   function selectDate(date) {
     document.dispatchEvent(new CustomEvent('sighting-date-selected', {detail:{date}}));
@@ -164,16 +156,15 @@
     showSelectedDay();
   });
   function render() {
-    const filtered = data.entries.filter(matches);
+    const filtered = data.entries;
     const entries = filtered.filter(entry => entry.date);
     const undated = filtered.filter(entry => !entry.date);
-    $('results').replaceChildren(...entries.slice(0,limit).map(card));
+    $('results').replaceChildren(...entries.map(card));
     if (!entries.length) {
       const empty = el('div', undefined, 'empty-state');
-      empty.append(el('h2','No dated sightings match.'),el('p','Try fewer words, choose another brand, or report the banner you saw.'),link('Report a sighting',reportURL({date:'',brand:'Unknown'})));
+      empty.append(el('h2','No dated sightings yet.'),el('p','Report a banner you saw to start the archive.'),link('Report a sighting',reportURL({date:'',brand:'Unknown'})));
       $('results').append(empty);
     }
-    $('more').hidden = entries.length <= limit;
     $('undated-results').replaceChildren(...undated.map(card));
     $('undated').hidden = !undated.length;
     $('undated').querySelector('summary').textContent = `Reports without a confirmed flight date (${undated.length})`;
@@ -189,15 +180,7 @@
     $('calendar-view').setAttribute('aria-pressed', String(view === 'calendar'));
     render();
   }
-  $('filters').hidden = false; $('viewbar').hidden = false; $('quick-search').hidden = false;
-  $('quick-search').querySelectorAll('button').forEach(button => button.addEventListener('click', () => { $('search').value=button.dataset.query; $('brand').value=''; limit=12; setView('list'); }));
-  $('filters').addEventListener('submit', event => event.preventDefault());
-  $('filters').addEventListener('input', () => {limit=12; render();});
-  $('filters').addEventListener('reset', () => { $('search').value=''; $('brand').value=''; limit=12; render(); });
-  $('more').addEventListener('click', () => {
-    const previousCount = Math.min(limit, dated.filter(matches).length); limit += 12; render();
-    $('results').children[previousCount]?.querySelector('button')?.focus();
-  });
+  $('viewbar').hidden = false;
   $('list-view').addEventListener('click', () => setView('list'));
   $('calendar-view').addEventListener('click', () => setView('calendar'));
   $('month').addEventListener('change', render);
@@ -213,6 +196,6 @@
     const legacy = location.hash.match(/^#(\d{4}-\d{2}-\d{2}):(.+)$/);
     if (legacy) {try {openEvidence(data.entries.find(entry => entry.date===legacy[1] && entry.brand===decodeURIComponent(legacy[2])),false);} catch { /* malformed fragment */ }}
   }
-  if (selectedDate) setView('calendar'); else render();
+  setView('calendar');
   fromHash(); window.addEventListener('hashchange',fromHash);
 })();
