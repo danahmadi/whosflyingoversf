@@ -1,31 +1,16 @@
-import json,html as H
-V=json.load(open("data/vendors.json"))
-e=H.escape
-def card(v):
-    src=" · ".join(f'<a href="{e(s)}">source</a>' for s in v["sources"])
-    ev=f'<div class=ev><b>Linked campaigns:</b> {e(v["evidence"])}</div>' if v["evidence"] else ""
-    return f'<div class=card><h3><a href="{e(v["url"])}">{e(v["name"])}</a></h3><div class=s>{e(v["location"])}</div><p>{e(v["services"])}</p><p class=s>{e(v["notes"])}</p>{ev}<div class=s>{src}</div></div>'
-feat="".join(card(v) for v in V["featured"]) or '<div class="card empty">No featured vendors yet.</div>'
-page=f"""<!doctype html><html><head><meta charset=utf-8><title>How to fly a banner over SF — Who's flying over SF?</title><meta name=viewport content="width=device-width,initial-scale=1"><style>
-body{{font-family:-apple-system,system-ui,Helvetica,Arial,sans-serif;margin:0;background:#f4f7fb;color:#1b2430}}main{{max-width:900px;margin:auto;padding:24px 28px}}h1 span{{color:#2a7de1}}a{{color:#2a7de1}}
-.card{{background:#fff;border-radius:14px;box-shadow:0 2px 10px #0001;padding:16px 18px;margin:12px 0}}.card h3{{margin:0 0 4px}}.s{{color:#667;font-size:13px}}.ev{{background:#eef3fa;border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}}
-.call{{background:#fff7e0;border-radius:12px;padding:14px 18px;margin:16px 0}}.empty{{color:#889;font-style:italic}}ol li{{margin:8px 0}}nav a{{margin-right:14px}}</style></head><body><main>
-<nav><a href="index.html">Calendar</a><a href="map.html">Map</a><a href="stats.html">Statistics</a><b>How to fly a banner</b></nav>
-<h1>How to fly a banner <span>over SF</span></h1><p class=s>A neutral overview from public sources. We're not affiliated with any operator.</p>
-<div class=card><h2>Steps</h2><ol>
-<li><b>Pick an operator.</b> Banner towing needs a specially equipped plane and an FAA certificate of waiver for towing (14 CFR 91.311), so book through an established operator (list below).</li>
-<li><b>Design the banner.</b> The choices are a <i>letter banner</i> (individual tall letters; operators cap the character count, e.g. Fly Sky Ads includes up to 45 characters) or a printed <i>aerial billboard</i>/logo board (FlySigns quotes $1.15–$1.89 per sq ft, up to 40×120 ft from its LA location). Several Reddit posters said banners were hard to read from below or only legible from one side, so short, high-contrast text works best.</li>
-<li><b>Airspace &amp; timing.</b> SF sits beneath busy SFO/OAK airspace and the operator coordinates routing. FlySigns says it flies about 1,000 ft over downtown SF and 500 ft over the bay, and that banners must be on the ground by sunset. Monaco's CEO said up to 2 of 6 daily flight hours went to transit from the airport, with one midday refuel.</li>
-<li><b>Weather.</b> Banner flights need visual conditions. Low clouds or fog can delay or cancel a flight, so ask the operator about its weather and rescheduling policy.</li>
-<li><b>Duration.</b> In the ADS-B data on this site, flights over SF typically lasted about 1.5–4 hours per day (up to ~5 hours on multi-session days). Monaco described ~6 flight hours/day including transit. Campaigns ranged from a single day to repeated multi-week runs.</li></ol></div>
-<div class=card><h2>What it costs</h2><ul>
-<li>~$6,000/day for ~6 flight hours: Monaco CEO Sam Blond (<a href="https://www.linkedin.com/posts/sam-blond-791026b_the-monaco-plane-economics-and-impact-activity-7468079804244959232-pCx2">LinkedIn</a>).</li>
-<li>~$1.5k/hour, quoted by Nathan Flurry (Rivet) (<a href="https://x.com/NathanFlurry/status/2072761245216952777">X</a>).</li>
-<li>Aerial Messages: $1,275/h (2 h), down to $935/h at 100 h (<a href="https://www.aerialmessages.com/commercial-advertising-rates/">rates</a>). US Air Ads: ~$625–925/h (<a href="https://usairads.com/rates.php">rates</a>). Fly Sky Ads (NY): $375–700+/h (<a href="https://flyskyads.com/pricing/">pricing</a>).</li>
-<li>For our cost, fuel and CO₂ estimates, see <a href="stats.html">Statistics</a>.</li></ul></div>
-<h2>Featured vendors</h2>{feat}
-<div class=call><b>Want to be featured on this list?</b> Email us at <a href="mailto:hello@sfbannerplanes.com">hello@sfbannerplanes.com</a></div>
-<h2>Vendors serving SF</h2>{''.join(card(v) for v in V['vendors'])}
-<p class=s>"Linked campaigns" appear only where public evidence exists. Vendor data: <code>data/vendors.json</code> (CC-BY-4.0). Corrections welcome via GitHub issues.</p>
-</main></body></html>"""
-open("site/fly.html","w").write(page);print("fly.html")
+from common import *
+from urllib.parse import urlparse
+V = json.loads((ROOT/'data/vendors.json').read_text())
+def vendor(v):
+    links = ' · '.join(f'<a href="{e(url)}">{e(urlparse(url).netloc.removeprefix("www."))}</a>' for url in v['sources'])
+    return f'<article class="vendor"><h3><a href="{e(v["url"])}">{e(v["name"])}</a></h3><p class="small">{e(v["location"])}</p><p>{e(v["services"])}</p><p class="small">{e(v["notes"])}</p><p class="small">Sources: {links}</p></article>'
+# Keep the core operator list; the blimp rewards anecdote is unrelated to booking a banner.
+vendors = [v for v in V['vendors'] if v['name'] != 'Buoyant Aero']
+body = hero('Book a banner', 'Ask about time over the city, transit and the cost of making the banner. Those details can change the quote.')
+body += '''<main id="content" class="reading"><figure class="photo"><img src="/assets/yippee-ki-yay.jpg" alt="Small planes tow red letter banners across the sky" width="1023" height="770"><figcaption>Letter banners outside SF. <a href="https://www.flickr.com/photos/40646519@N00/635938704">“Yippee Ki Yay” by Joe Shlabotnik</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>. Cropped for this page.</figcaption></figure>
+<section><h2>Start with a short brief</h2><p>Tell the operator the date, the area you want to reach and the exact words or artwork. Ask for a quote that separates these items:</p><ul><li><strong>Time above SF and time in transit.</strong> Monaco's CEO described a six-hour booking with up to two hours between the airport and the city.</li><li><strong>The banner itself.</strong> Individual letters and a printed billboard have different production costs. Ask about character limits, reuse and lead time.</li><li><strong>Weather and rescheduling.</strong> Ask what happens if fog, wind or airspace restrictions prevent the flight.</li><li><strong>Proof of the flight.</strong> Ask whether you will receive a flight log or photos, and who handles any changes on the day.</li></ul><p>Keep the message short enough to read from the ground. Give the operator a phone-sized mockup as well as the full artwork.</p></section>
+<section><h2>Two published price references</h2><p>Monaco's Sam Blond reported about <strong>$6,000 for six flight hours</strong>. Aerial Messages lists <strong>$2,550 for two hours</strong> and lower hourly rates for larger bookings. Neither is a quote for your flight.</p><p><a href="https://www.linkedin.com/posts/sam-blond-791026b_the-monaco-plane-economics-and-impact-activity-7468079804244959232-pCx2">Monaco's account</a> · <a href="https://www.aerialmessages.com/commercial-advertising-rates/">Aerial Messages rates</a></p></section>
+<section><h2>Operators and brokers to contact</h2><p>These companies advertise Bay Area service. We have not booked or evaluated them. Ask each company who will operate the aircraft and whether it can serve your date and location.</p>'''
+body += ''.join(vendor(v) for v in vendors)
+body += '''</section><aside class="contribute"><h2>Keep this list useful</h2><p>Booked a flight, found a stale listing or have a current quote to share? <a href="mailto:hello@sfbannerplanes.com?subject=Banner%20operator%20information">Send a correction</a>. We don't rank operators by how often their aircraft appear on the map.</p></aside></main>'''
+write('fly.html', page('Book a banner', 'Questions to ask before booking a banner plane over San Francisco, with published pricing and operator contacts.', '/fly', body))

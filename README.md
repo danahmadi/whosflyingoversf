@@ -1,33 +1,49 @@
-# whosflyingoversf — Who's flying over SF?
+# Who's flying over SF?
 
-A public, community-maintained calendar of the brands that tow aerial banners over **San Francisco**, with evidence for each day, flight tracks from open ADS-B data, and rough cost/fuel/CO₂ estimates.
+A community archive of the banners above San Francisco: the words people saw, the date, and the source. [whosflyingoversf.com](https://whosflyingoversf.com)
 
-Site: https://whosflyingoversf.com (sfbannerplanes.com redirects). Built from `data/` by the scripts in `scripts/`, committed to `site/` and served as static files by Vercel (push to `main` = production). After editing `data/`, run `python scripts/build_all.py` and commit `site/` too; CI fails if it is stale.
+The homepage has a searchable sightings list and calendar. Reports without an established flight date stay in a separate section. The flight map shows candidate banner-tow tracks; a brand seen on the same day is a lead, not a confirmed aircraft match.
 
-## Data
-| File | What |
-|---|---|
-| `data/sightings.csv` | One row per public piece of evidence (post, article, thread) |
-| `data/brands.json` | Advertiser metadata: name, match prefix, url, logo, color, description |
-| `data/flights.json` | Banner-tow flights detected from the adsb.lol open archive (derived) |
+## Build and contribute
 
-### `sightings.csv` schema
-`source` (X/LinkedIn/Reddit/News/Dan), `date_pt` (YYYY-MM-DD, America/Los_Angeles), `time_pt`, `brand`, `banner_text` (only as stated in the source, never guessed), `post_url`, `author`, `has_image` (yes/no), `confidence` (high/medium/low), `notes`.
+No Node app, build service or environment variables. Vercel serves the committed `site/` folder. Python 3.12+ and the standard library generate the HTML and data files.
 
-### Confidence rules
-- **high**: photo of the banner, quoted banner text, or the advertiser itself says it flew that day.
-- **medium**: names the brand without a photo, or the date is "yesterday"/"this week" style.
-- **low**: jokes, vague references, or the brand is inferred. Low rows are kept but not shown on the site.
-- Sightings outside SF proper (South Bay, San Mateo, Alameda…) are kept in the CSV but left off the calendar and stats.
+```sh
+python3 scripts/build_all.py
+python3 -m unittest discover -s tests -v
+```
 
-### Flights
-`scripts/detect.py` scans daily `trace_full_<icao>.json` files for the tracked banner-tow tails and keeps segments that loiter low (<3,500 ft median) and slow (<85 kt median) for at least 45 minutes inside an SF bounding box. Each flight gets matched to the brands seen that same day: a single brand is a match, several brands make it *ambiguous*, and no brand means *unknown* (shown as "?" on the calendar). Raw archives are not committed.
+Commit the data and generated `site/` changes together. CI validates data, runs regression tests, rebuilds the pages and rejects stale generated files. Vercel creates PR previews and deploys `main` to production. CI must pass before merging; Vercel's build itself does not run Python validation.
 
-## Methodology (stats)
-Day counts are a **floor**. Estimates use 4–6 h/day, $4.5k–9k/day, 7–12 gal/h of 100LL, and 8.31 kg CO₂/gal (EPA). Real ADS-B hours are shown wherever a flight was detected. Sources are cited on the stats page.
+To report a sighting, use the [issue form](https://github.com/danahmadi/whosflyingoversf/issues/new?template=sighting.yml). For data changes, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md). The quickest way: open a **Report a sighting** issue.
+## Data files
 
-## License
-Code: MIT (`LICENSE`). Data in `data/`: CC-BY-4.0 (`data/LICENSE`).
+- `data/sightings.csv`: one row per source or direct report. Reposts can describe the same sighting.
+- `data/brands.json`: names, matching prefixes, short descriptions, links and logos.
+- `data/flights.json`: legacy candidate tracks derived from the adsb.lol archive. The raw traces are not committed. Existing durations have not been reprocessed with the corrected detector and are excluded from public estimates.
+- `data/vendors.json`: operator and broker references.
+
+### Dates and locations
+
+`date_pt` is the **observed flight date**, when known. `posted_date_pt` preserves the source's publication date. `date_precision` is `day` or `unknown`; unknown dates leave `date_pt` empty. `time_pt` is the original source/post time, not a verified flight time.
+
+`location` is `sf`, `outside-sf` or `uncertain`. Only `sf` rows with medium/high confidence enter the site. Low-confidence references and other locations stay in the CSV. A report's confidence does not establish its date, its location, or which aircraft carried the banner.
+
+The initial date/location corrections use the existing research notes, with publication dates preserved. They are not a fresh independent verification of every linked post. Audit any source you change and describe the evidence in your PR.
+
+### Flight traces
+
+```sh
+bash scripts/get.sh 2026.10.05
+python3 scripts/detect.py --input adsb --output data/flights.json
+python3 scripts/build_all.py
+```
+
+The downloader fetches the split daily archive and extracts the tracked aircraft into ignored `adsb/`. It downloads a large archive; it is separate from the normal site build. The detector sums short observed airborne intervals inside the SF box, excludes ground observations and gaps over two minutes, and requires at least 45 minutes of qualifying coverage per aircraft/day. Missing coverage is unknown time. Back up or version your input set before regenerating: the output covers only the traces you supply.
+
+## Public estimates
+
+The site publishes dated sighting counts, source links, and clearly labeled campaign pricing examples. It does not assign inferred tracks to an advertiser or publish per-brand spending, fuel or carbon totals.
+
+Code: MIT. Data in `data/`: CC BY 4.0. Photos retain their original licenses; credits appear on the site and in `site/assets/credits.json`. Brand marks belong to their owners.

@@ -5,7 +5,11 @@ labels: [sighting]
 body:
   - type: input
     id: date
-    attributes: {label: Date (PT), placeholder: "2026-10-14"}
+    attributes: {label: Date (PT), description: "The day you saw the banner, not the day a post went up. Say unsure if you do not know.", placeholder: "2026-10-14 or unsure"}
+    validations: {required: true}
+  - type: input
+    id: neighborhood
+    attributes: {label: Neighborhood / location, placeholder: "Mission Bay, San Francisco"}
     validations: {required: true}
   - type: input
     id: brand
@@ -18,7 +22,7 @@ body:
     attributes: {label: Source URL (post, article, thread)}
   - type: textarea
     id: photo
-    attributes: {label: Photo, description: Drag and drop a photo here}
+    attributes: {label: Photo, description: "Drag and drop a photo you have permission to share. Please avoid private details about bystanders."}
   - type: textarea
     id: notes
     attributes: {label: Where/when, description: Neighborhood, time of day, anything else}
