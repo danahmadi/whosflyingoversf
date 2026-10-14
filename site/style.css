@@ -118,3 +118,5 @@ th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--sky);font-
 .selected-day{margin-top:24px}.selected-day h2{font-size:20px;margin-bottom:16px}.selected-day>.small{margin-top:12px}
 @media(max-width:1000px){.browse-layout{display:flex;flex-direction:column;gap:24px}.archive-panel,.home-map{width:100%}.home-map{position:static;order:-1}.home-map #map{height:320px;min-height:280px}.map-heading h2{scroll-margin-top:16px}}
 @media(max-width:650px){.archive-panel .sighting{grid-template-columns:1fr;gap:9px}.home-map{padding:14px}.map-heading h2{font-size:22px}.day-select{min-width:30px;min-height:36px;padding:2px;font-size:12px}.day-select.has-tracks:after{margin-left:3px;width:4px;height:4px}}
+.map-brand-control{display:flex;flex-direction:column;gap:7px;font-size:14px;font-weight:600;margin-top:18px}.map-brand-control select{width:100%}#map-filters .map-brand-control{margin-top:0}.home-map #brand-context{font-size:12px;margin-top:10px}#map-filters #brand-context{margin:0;font-size:12px}
+@media(max-width:650px){#map-filters .map-brand-control,#map-filters #brand-context{grid-column:1/-1}}
