@@ -26,6 +26,9 @@ Site: https://whosflyingoversf.com (sfbannerplanes.com redirects). Built from `d
 ## Methodology (stats)
 Day counts are a **floor**. Estimates use 4–6 h/day, $4.5k–9k/day, 7–12 gal/h of 100LL, and 8.31 kg CO₂/gal (EPA). Real ADS-B hours are shown wherever a flight was detected. Sources are cited on the stats page.
 
+## Social preview image & favicon
+`site/og.png` (1200×630) and `site/favicon.{svg,ico}` are generated, not hand-edited. Regenerate them with `python scripts/make_og_image.py` (renders HTML with headless Chrome/Chromium — set `CHROME_BIN` if it's not on `PATH`) and `python scripts/make_favicon.py` (Pillow only), then commit the results. Every page's Open Graph/Twitter meta tags are injected by `scripts/theme.py` as part of `build_all.py`, so they're regenerated automatically whenever the site is rebuilt.
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md). The quickest way: open a **Report a sighting** issue.
 
