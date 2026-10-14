@@ -47,3 +47,5 @@ The downloader fetches the split daily archive and extracts the tracked aircraft
 The site publishes dated sighting counts, source links, and clearly labeled campaign pricing examples. It does not assign inferred tracks to an advertiser or publish per-brand spending, fuel or carbon totals.
 
 Code: MIT. Data in `data/`: CC BY 4.0. Photos retain their original licenses; credits appear on the site and in `site/assets/credits.json`. Brand marks belong to their owners.
+
+Share artwork and favicon assets are checked in. To regenerate them, install Pillow and run `python3 scripts/make_og_image.py` and `python3 scripts/make_favicon.py`; these are separate from the standard-library site build.
