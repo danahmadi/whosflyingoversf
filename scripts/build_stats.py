@@ -1,49 +1,21 @@
-import json,re
-s=open("site/index.html").read()
-D=json.loads(re.search(r"const D=(\{.*?\});const months",s,re.S).group(1))
-days={}
-for d,v in D["days"].items():
-    for b in v: days.setdefault(b,[]).append(d)
-A=dict(hrs=(4,6),cost=(4500,9000),costmid=6000,gph=(7,12),co2=8.31)
-FH={}
-for fl in D.get("flights",[]):
-    FH.setdefault(fl["brand"],[0,0,0]);FH[fl["brand"]][0]+=1;FH[fl["brand"]][1]+=fl["hours_over_sf"];FH[fl["brand"]][2]+=fl["airborne_hours"]
-rows=[]
-for b,ds in sorted(days.items(),key=lambda x:-len(x[1])):
-    n=len(ds);lbl=D["brands"].get(b,{}).get("label",b)
-    drone=b=="Pylon"
-    h=(n*A["hrs"][0],n*A["hrs"][1])
-    c=(n*A["cost"][0],n*A["cost"][1]) if not drone else None
-    g=(h[0]*A["gph"][0],h[1]*A["gph"][1]) if not drone else None
-    co=(g[0]*A["co2"]/1000,g[1]*A["co2"]/1000) if g else None
-    rows.append((lbl,n,min(ds),max(ds),h,c,g,co,drone))
-f=lambda a,fmt:"—" if a is None else f"{fmt(a[0])} – {fmt(a[1])}"
-money=lambda x:f"${x/1000:,.0f}k" if x<1e6 else f"${x/1e6:.2f}M"
-tr="".join(f"<tr><td><b>{l}</b>{' <span class=s>(drone airship; excluded from fuel/cost)</span>' if dr else ''}</td><td>{n}</td><td>{a} → {z}</td><td>{f(h,lambda x:f'{x:,.0f}')}</td><td>{(lambda q: f'{q[0]} · {q[1]:.1f} · {q[2]:.1f}' if q else '—')(FH.get(next((k for k,v in D['brands'].items() if v.get('label',k)==l),l)))}</td><td>{f(c,money)}</td><td>{f(g,lambda x:f'{x:,.0f}')}</td><td>{f(co,lambda x:f'{x:,.1f}')}</td></tr>" for l,n,a,z,h,c,g,co,dr in rows)
-P=[r for r in rows if not r[8]]
-T=lambda i,j:sum(r[i][j] for r in P)
-tot=f"<tr class=tot><td>Total (planes)</td><td>{sum(r[1] for r in P)}</td><td></td><td>{T(4,0):,} – {T(4,1):,}</td><td>{sum(v[0] for v in FH.values())} · {sum(v[1] for v in FH.values()):.1f} · {sum(v[2] for v in FH.values()):.1f}</td><td>{money(T(5,0))} – {money(T(5,1))}</td><td>{T(6,0):,.0f} – {T(6,1):,.0f}</td><td>{T(7,0):,.1f} – {T(7,1):,.1f}</td></tr>"
-html=f"""<!doctype html><html><head><meta charset=utf-8><title>Who's flying over SF? — statistics</title><style>
-body{{font-family:-apple-system,system-ui,Helvetica,Arial,sans-serif;margin:0;background:#f4f7fb;color:#1b2430}}main{{max-width:1050px;margin:auto;padding:24px 32px}}
-h1 span{{color:#2a7de1}}a{{color:#2a7de1}}.card{{background:#fff;border-radius:14px;box-shadow:0 2px 10px #0001;padding:18px;margin:16px 0}}
-table{{border-collapse:collapse;width:100%;font-size:14px}}th,td{{padding:7px 8px;border-bottom:1px solid #eef;text-align:left}}th{{font-size:12px;color:#667;text-transform:uppercase}}
-.tot td{{font-weight:700;border-top:2px solid #ccd}}.s{{color:#889;font-size:12px}}li{{margin:5px 0}}.warn{{background:#fff7e0;border-radius:10px;padding:10px 14px}}
-</style></head><body><main><a href="index.html">← Calendar</a> · <a href="fly.html">How to fly a banner</a><h1>Who's flying <span>over SF?</span> — statistics</h1>
-<div class="warn"><b>Day counts are a floor.</b> A day only counts if a dated public post (X, LinkedIn, Reddit, news) with medium/high confidence exists. Advertisers such as Monaco flew far more days than were posted about. All other figures are rough estimates shown as low – high ranges.</div>
-<div class=card><table><tr><th>Advertiser</th><th>Days seen</th><th>First → last</th><th>Flight hours (est.)</th><th>ADS-B flights · h over SF · h airborne</th><th>Est. spend</th><th>Avgas (gal)</th><th>CO₂ (tonnes)</th></tr>{tr}{tot}</table></div>
-<div class=card><h2>Methodology &amp; assumptions</h2><ul>
-<li><b>Flight hours per day: 4–6 h.</b> Monaco CEO Sam Blond: "~$6,000 / day. This includes 6 hours of flight time, up to 2 of which are from the airport to SF (they have to refuel once during the day)." Low = ~4 h over SF only; high = the full 6 h including transit. <a href="https://www.linkedin.com/posts/sam-blond-791026b_the-monaco-plane-economics-and-impact-activity-7468079804244959232-pCx2">LinkedIn, Jun 3 2026</a></li>
-<li><b>Spend per day: $4,500–$9,000</b> (mid $6,000 = Blond's figure). Low ≈ 6 h at published volume rates (~$750–935/h); high ≈ 6 h at $1,500/h, the rate Nathan Flurry (Rivet) quoted for SF (<a href="https://x.com/NathanFlurry/status/2072761245216952777">X, Jul 2 2026</a>). Prices vary by operator, banner type (letter vs. printed billboard) and how many days are booked.</li>
-<li><b>Fuel burn: 7–12 gal/h of 100LL avgas.</b> An NTSB report on a PA-18A-150 banner-tow flight says "During banner tow operations the fuel burn off rate is about 8 gallons per hour" (<a href="https://data.ntsb.gov/carol-repgen/api/Aviation/ReportMain/GenerateNewestReport/68426/pdf">NTSB LAX08CA224</a>). The PA-18-150 manual lists 9 gph at 75% power (<a href="https://alaskafloatratings.com/wp-content/uploads/2021/12/pa-18-owners-manual-fuel-systems.pdf">manual excerpt</a>). The Champion 7KCAB (e.g. N7589F, registered to Aerial Advertising Services, Livermore) is listed at 6–9 gph at 75% power. A Cessna 180 burns ~13 gph at 75% (<a href="https://www.aopa.org/news-and-media/all-news/2014/february/pilot/cessna-180-skywagon">AOPA</a>). Towing a banner at high power and low speed raises burn, so 12 gph is the upper bound.</li>
-<li><b>CO₂: 8.31 kg per gallon of aviation gasoline</b>, EPA GHG Emission Factors Hub (40 CFR 98 Table C-1), combustion only, not lifecycle (<a href="https://www.epa.gov/system/files/documents/2025-01/ghg-emission-factors-hub-2025.pdf">EPA 2025</a>). 100LL also emits lead, which isn't counted here.</li>
-<li><b>ADS-B column:</b> real flights detected in the adsb.lol open archive for the tracked tails (low, slow loitering inside an SF box), with brands matched from same-day sightings. "Ambiguous" days are credited to the first brand. Real hours replace the 4–6 h guess wherever a flight was found; ADS-B coverage of small planes is incomplete.</li><li>Pylon's drone airship is shown in the table but left out of fuel, cost and CO₂.</li>
-<li>Low estimate = days × 4 h × 7 gph; high estimate = days × 6 h × 12 gph. One plane per advertiser per day.</li></ul></div>
-<div class=card><h2>Other public banner pricing</h2><ul>
-<li>Monaco: ~$6,000/day for 6 h, vs. ~$120k/month for a premium 101 billboard (Blond, above).</li>
-<li>Nathan Flurry (Rivet): "a banner plane for $1.5k/hr" vs. a $240k/yr billboard on 101 (<a href="https://x.com/NathanFlurry/status/2072761245216952777">X</a>).</li>
-<li>Aerial Messages (national operator): $1,275/h for 2 h, falling to $935/h at 100 h (<a href="https://www.aerialmessages.com/commercial-advertising-rates/">rates</a>).</li>
-<li>US Air Ads: ~$625–925/h for campaigns (<a href="https://usairads.com/rates.php">rates</a>). Fly Sky Ads (NY beaches): $375–700+/h (<a href="https://flyskyads.com/pricing/">pricing</a>).</li>
-<li>FlySigns (Hayward base): aerial billboards printed at $1.15–1.89 per sq ft (<a href="http://www.flysigns.com/op-san-francisco.php">FlySigns SF</a>).</li>
-<li>An unsourced X post claimed "+$10k for a 15 min flight" (<a href="https://x.com/GazvodaMatjaz/status/2099668018473083220">X</a>); it conflicts with every figure above.</li></ul></div>
-</main></body></html>"""
-open("site/stats.html","w").write(html);print(*[(r[0],r[1]) for r in rows])
+from common import *
+from collections import defaultdict
+D = load_data()
+days = defaultdict(set)
+for item in D['entries']:
+    if item['date']: days[item['brand']].add(item['date'])
+rows = ''
+for brand, dates in sorted(days.items(), key=lambda x:(-len(x[1]),x[0])):
+    name = D['brands'][brand]['label']
+    rows += f'<tr><th scope="row">{e(name)}'+(' <span class="small">(drone airship)</span>' if brand=='Pylon' else '')+f'</th><td>{len(dates)}</td><td>{date_label(min(dates))}</td><td>{date_label(max(dates))}</td></tr>'
+undated = len([x for x in D['entries'] if not x['date']])
+body = hero('About the data', 'A photo can identify a banner. A flight track can show where a plane went. Connecting the two takes more evidence.')
+body += f'''<main id="content" class="reading">
+<section><h2>Days with a dated sighting</h2><p>We count each brand once per day, even when several people post about it. We use the date of the sighting when a source specifies one, rather than the date of a later post. These counts describe this archive; they do not measure how often a company flies.</p>
+<div class="tbl"><table><caption>Dated SF sightings by brand</caption><thead><tr><th scope="col">Brand</th><th scope="col">Days</th><th scope="col">First report</th><th scope="col">Latest report</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class="small">We keep {undated} reports with unconfirmed flight dates separate. Reports outside SF, uncertain locations and low-confidence references stay in the source CSV but do not enter these counts. Direct reader reports carry a label when no public link is available.</p></section>
+<section><h2>How we handle a report</h2><ol><li>Keep the source link and the wording the person reported. A quoted slogan is not a transcript we independently verified.</li><li>Separate the flight date from the post date. “Yesterday” can establish a date; “last week” cannot establish a single day.</li><li>Check the location. A banner at SaaStr in San Mateo does not establish a sighting over San Francisco.</li><li>Keep unconfirmed dates visible as undated reports. Corrections can change the counts.</li></ol><p>You can inspect the <a href="{REPO}/blob/main/data/sightings.csv">source CSV</a>, <a href="{REPO}/blob/main/CONTRIBUTING.md">contribution notes</a>, or <a href="{REPO}/issues/new">flag an error</a>.</p></section>
+<section><h2>What the flight map shows</h2><p>The <a href="/map">map</a> contains {len(D['flights'])} candidate tracks from the <a href="https://www.adsb.lol/">adsb.lol</a> archive. The detector looks for tracked aircraft spending at least 45 minutes inside an SF bounding box, with median speed below 85 knots and median altitude below 3,500 feet.</p><p>That pattern suggests banner towing. It does not prove that a plane carried a banner. A brand seen on the same date is a lead, so we list it as a possible match without assigning the flight to that advertiser.</p><p>The archive covers selected aircraft and dates. Missing tracks do not establish that a flight never happened. Older duration values came from a detector that could include gaps and ground time; we have removed those durations from the public estimates until the raw traces can be reprocessed.</p></section>
+<section><h2>What a day might cost</h2><p>Monaco CEO Sam Blond reported about <strong>$6,000 for six flight hours</strong>, including up to two hours of transit. That is one campaign's price. We do not apply it to every company in the calendar. <a href="https://www.linkedin.com/posts/sam-blond-791026b_the-monaco-plane-economics-and-impact-activity-7468079804244959232-pCx2">Read his account</a>.</p><p>Aerial Messages currently lists $1,275 per hour for a two-hour booking and $935 per hour at 100 hours. Ask an operator about transit, banner production and weather cancellations before comparing quotes. <a href="https://www.aerialmessages.com/commercial-advertising-rates/">Published rates</a> · <a href="/fly">Booking guide</a>.</p></section>
+<section><h2>Fuel and carbon: an example, not a tally</h2><p>For a hypothetical four-hour flight burning eight gallons an hour, 32 gallons of aviation gasoline would produce about <strong>266 kg of CO₂</strong>. The EPA lists 8.31 kg CO₂ per gallon. This example covers combustion only.</p><p>We do not know the fuel consumption or total flight hours of each campaign, so we do not publish per-brand emissions or spending totals. <a href="https://www.epa.gov/system/files/documents/2025-01/ghg-emission-factors-hub-2025.pdf">EPA emission factors</a>.</p></section><section><h2>Image credits</h2><p>Social previews use <a href="https://www.flickr.com/photos/9763931@N04/4838791175">“Adversiting banner airplane” by Lee Cannon</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>. The booking guide credits its photo below the image.</p></section></main>'''
+write('stats.html', page('About the data', 'How we date SF banner sightings, handle uncertain reports and interpret aircraft tracks. Sources and assumptions behind the archive.', '/stats', body))

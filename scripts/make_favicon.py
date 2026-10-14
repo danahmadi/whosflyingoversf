@@ -1,6 +1,6 @@
 """Generate the site favicon from the same brand marks used elsewhere
 (ink background, Golden Gate orange accent, little paper-plane glyph —
-see the "plane" icon in scripts/theme.py and the og.png tow scene).
+see the og.png tow scene).
 
 Outputs:
   site/favicon.svg        vector icon, used by modern browsers

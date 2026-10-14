@@ -1,73 +1,73 @@
 {
- "Monaco": {
-  "match": "Monaco",
-  "url": "https://www.monaco.com",
-  "logo": "logos/monaco.png",
-  "color": "#111",
-  "description": "Monaco is an AI-native revenue platform for startups that replaces legacy CRM and sales point solutions \u2014 building TAM, running outbound, capturing interactions and managing pipeline in one place. (monaco.com)"
- },
- "Paid": {
-  "match": "Paid",
-  "url": "https://paid.ai",
-  "logo": "logos/paid.png",
-  "color": "#0a7",
-  "description": "Paid is a billing and pricing platform for AI agent companies: \"Align pricing with value. Protect margins. Grow revenue.\" (paid.ai)"
- },
- "Artisan": {
-  "match": "Artisan",
-  "url": "https://www.artisan.co",
-  "logo": "logos/artisan.png",
-  "color": "#7b3fe4",
-  "description": "Artisan automates outbound sales with an AI-first platform powered by AI employees, including an AI BDR. (artisan.co)"
- },
- "Vendo": {
-  "match": "Vendo",
-  "url": "https://vendo.run",
-  "logo": "logos/vendo.png",
-  "color": "#e46a1b",
-  "description": "Vendo (YC S26) embeds an agent in your product that lets customers automate work, build their own views and connect tools inside your brand and guardrails. (vendo.run)"
- },
- "Pocket FM": {
-  "match": "Pocket FM",
-  "url": "https://pocketfm.com",
-  "logo": "logos/pocketfm.png",
-  "color": "#d0021b",
-  "description": "Pocket FM is an audio series platform offering serialized audio dramas \u2014 fantasy, thrillers, romance and more. (pocketfm.com)"
- },
- "Apify": {
-  "match": "Apify",
-  "url": "https://apify.com",
-  "logo": "logos/apify.png",
-  "color": "#246dff",
-  "description": "Apify offers thousands of tools for web scraping and automation \u2014 real-time web data, competitor tracking, lead generation and integrations for apps and AI agents. (apify.com)"
- },
- "OpenAI": {
-  "match": "OpenAI",
-  "url": "https://openai.com",
-  "logo": "logos/openai.png",
-  "color": "#10a37f",
-  "description": "OpenAI is an AI research and deployment company, maker of ChatGPT. (Sponsor of this banner not confirmed.)"
- },
- "GLHFDD": {
-  "match": "Good Luck",
-  "label": "Good Luck, Have Fun, Don't Die",
-  "url": "https://en.wikipedia.org/wiki/Good_Luck,_Have_Fun,_Don%27t_Die",
-  "logo": null,
-  "color": "#c2185b",
-  "description": "Feature film directed by Gore Verbinski; the banner was a promotional stunt for its release."
- },
- "Uber": {
-  "match": "Uber",
-  "url": "https://www.uber.com",
-  "logo": "logos/uber.png",
-  "color": "#000",
-  "description": "Uber is a ride-hailing and delivery platform. Banner sightings were mostly South Bay (San Jose/Cupertino/Fremont)."
- },
- "Pylon": {
-  "match": "Pylon",
-  "url": "https://usepylon.com",
-  "logo": "logos/pylon.png",
-  "color": "#c62828",
-  "description": "Pylon is a B2B customer-support platform. Its aerial ad was a drone airship (not a towed banner)."
- }
+  "Monaco": {
+    "match": "Monaco",
+    "url": "https://www.monaco.com",
+    "logo": "logos/monaco.png",
+    "color": "#111",
+    "description": "Sales software for startups."
+  },
+  "Paid": {
+    "match": "Paid",
+    "url": "https://paid.ai",
+    "logo": "logos/paid.png",
+    "color": "#0a7",
+    "description": "Billing software for companies that sell AI agents."
+  },
+  "Artisan": {
+    "match": "Artisan",
+    "url": "https://www.artisan.co",
+    "logo": "logos/artisan.png",
+    "color": "#7b3fe4",
+    "description": "Software that automates sales outreach."
+  },
+  "Vendo": {
+    "match": "Vendo",
+    "url": "https://vendo.run",
+    "logo": "logos/vendo.png",
+    "color": "#e46a1b",
+    "description": "Tools for adding AI agents to a software product."
+  },
+  "Pocket FM": {
+    "match": "Pocket FM",
+    "url": "https://pocketfm.com",
+    "logo": "logos/pocketfm.png",
+    "color": "#d0021b",
+    "description": "An app for serialized audio stories."
+  },
+  "Apify": {
+    "match": "Apify",
+    "url": "https://apify.com",
+    "logo": "logos/apify.png",
+    "color": "#246dff",
+    "description": "Web scraping and automation tools."
+  },
+  "OpenAI": {
+    "match": "OpenAI",
+    "url": "https://openai.com",
+    "logo": "logos/openai.png",
+    "color": "#10a37f",
+    "description": "The company behind ChatGPT. A banner carried its logo; the sponsor is unconfirmed."
+  },
+  "GLHFDD": {
+    "match": "Good Luck",
+    "label": "Good Luck, Have Fun, Don't Die",
+    "url": "https://en.wikipedia.org/wiki/Good_Luck,_Have_Fun,_Don%27t_Die",
+    "logo": null,
+    "color": "#c2185b",
+    "description": "A film directed by Gore Verbinski. Its promotional banner said “Hire human beings.”"
+  },
+  "Uber": {
+    "match": "Uber",
+    "url": "https://www.uber.com",
+    "logo": "logos/uber.png",
+    "color": "#000",
+    "description": "Ride-hailing and delivery. The reports in this archive describe South Bay sightings."
+  },
+  "Pylon": {
+    "match": "Pylon",
+    "url": "https://usepylon.com",
+    "logo": "logos/pylon.png",
+    "color": "#c62828",
+    "description": "Customer-support software. The reported aircraft was a drone airship."
+  }
 }

@@ -1,0 +1,12 @@
+# Who's flying over SF?
+
+A community archive of banner sightings above San Francisco.
+
+- [Sightings](https://whosflyingoversf.com/): Dated reports and separate undated reports.
+- [Method](https://whosflyingoversf.com/stats): Coverage limits, dates and assumptions.
+- [Map](https://whosflyingoversf.com/map): Candidate aircraft tracks, not confirmed advertiser matches.
+- [Source data](https://github.com/danahmadi/whosflyingoversf/tree/main/data): CSV and JSON; CC BY 4.0.
+
+Do not treat missing reports as absence of flights, same-day brands as confirmed aircraft matches, or post dates as sighting dates.
+
+Flight durations in the legacy archive have not been reprocessed and are excluded from public spending and emissions totals. Price examples are individual published quotes, not estimates of advertiser spending.
