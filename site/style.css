@@ -106,3 +106,15 @@ th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--sky);font-
 @media(prefers-reduced-motion:no-preference){a,button{transition:background-color .12s,color .12s}}
 
 @media(max-width:650px){.hero{padding-top:12px;padding-bottom:20px}.banner h1{font-size:32px}.lede{font-size:16px;margin-top:16px}.archive-meta{padding:10px 0 18px;font-size:12px}.archive-meta span{flex-basis:auto;margin-left:auto}.filters{gap:10px;margin-bottom:16px}.filters label{font-size:12px}.filters input,.filters select{min-height:44px}.quick-search{font-size:12px;gap:2px 14px;margin:0 0 16px}.quick-search button{min-height:28px}}
+
+/* Keep the date picker and its map visible together on wide screens. */
+.browse-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:start}
+.archive-panel{min-width:0}.archive-panel .sighting{grid-template-columns:140px minmax(0,1fr);gap:16px}.archive-panel .sighting h3{font-size:24px}
+.home-map{position:sticky;top:20px;min-width:0;background:var(--paper);padding:20px;border-radius:4px;border:1px solid var(--step)}
+.map-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.map-heading h2{font-size:24px;letter-spacing:-.025em}.map-heading a{font-size:13px;white-space:nowrap}
+#map-date-label{font-size:18px;font-weight:700;margin-top:18px}.home-map #map-status{font-size:13px;min-height:42px;margin:8px 0 12px}.home-map #map{height:380px;min-height:300px;z-index:0}.home-map .map-caption{font-size:12px;margin-top:12px}.home-map #reset-map-day{margin-top:8px}
+.day.selected{box-shadow:inset 0 0 0 2px var(--accent);background:var(--soft)}
+.day-select{background:transparent;text-align:left;min-height:36px;min-width:36px;padding:4px;font-weight:600;color:var(--ink);position:relative}.day-select:hover{background:var(--step)}.day-select.has-tracks:after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
+.selected-day{margin-top:24px}.selected-day h2{font-size:20px;margin-bottom:16px}.selected-day>.small{margin-top:12px}
+@media(max-width:1000px){.browse-layout{display:flex;flex-direction:column;gap:24px}.archive-panel,.home-map{width:100%}.home-map{position:static;order:-1}.home-map #map{height:320px;min-height:280px}.map-heading h2{scroll-margin-top:16px}}
+@media(max-width:650px){.archive-panel .sighting{grid-template-columns:1fr;gap:9px}.home-map{padding:14px}.map-heading h2{font-size:22px}.day-select{min-width:30px;min-height:36px;padding:2px;font-size:12px}.day-select.has-tracks:after{margin-left:3px;width:4px;height:4px}}

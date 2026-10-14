@@ -24,10 +24,14 @@
   let limit = 12;
   let view = 'list';
   const dated = data.entries.filter(entry => entry.date);
+  let selectedDate = new URLSearchParams(location.search).get('date') || '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = '';
+  const trackDates = new Set(data.flights.map(flight => flight.date));
   const months = [];
   if (dated.length) {
-    const first = dated.map(entry => entry.date).sort()[0].slice(0,7);
-    const last = data.latest.slice(0,7);
+    const allDates = [...dated.map(entry => entry.date), ...trackDates, ...(selectedDate ? [selectedDate] : [])].sort();
+    const first = allDates[0].slice(0,7);
+    const last = allDates.at(-1).slice(0,7);
     let [year, month] = first.split('-').map(Number);
     while (`${year}-${String(month).padStart(2,'0')}` <= last) {
       const value = `${year}-${String(month).padStart(2,'0')}`;
@@ -37,7 +41,7 @@
       month++; if (month === 13) {month = 1; year++;}
     }
   }
-  $('month').value = months.at(-1) || '';
+  $('month').value = selectedDate ? selectedDate.slice(0,7) : months.at(-1) || '';
   $('search').value = new URLSearchParams(location.search).get('q') || '';
 
   function matches(entry) {
@@ -57,6 +61,7 @@
   }
   function openEvidence(entry, updateHash = true) {
     if (!entry) return;
+    if (entry.date) selectDate(entry.date);
     const brand = data.brands[entry.brand];
     const body = $('evidence-body'); body.replaceChildren();
     $('evidence-date').textContent = formatDate(entry.date);
@@ -113,7 +118,18 @@
     for (let i=0; i<new Date(year,month-1,1).getDay(); i++) grid.append(el('div',undefined,'day empty'));
     for (let day=1; day<=new Date(year,month,0).getDate(); day++) {
       const key = `${value}-${String(day).padStart(2,'0')}`;
-      const box = el('div', undefined, 'day'); box.append(el('div', String(day), 'num'));
+      const box = el('div', undefined, 'day'); box.dataset.date = key;
+      const dayButton = el('button', String(day), 'num day-select');
+      dayButton.setAttribute('aria-label', `${formatDate(key)}. Show flight tracks${trackDates.has(key) ? ', tracks available' : ''}.`);
+      dayButton.setAttribute('aria-pressed', String(selectedDate === key));
+      box.classList.toggle('selected', selectedDate === key);
+      if (trackDates.has(key)) dayButton.classList.add('has-tracks');
+      box.append(dayButton);
+      box.addEventListener('click', event => {
+        if (event.target.closest('.day-entry')) return;
+        selectDate(key);
+        if (window.matchMedia('(max-width: 1000px)').matches) $('map-title').scrollIntoView({block:'start'});
+      });
       entries.filter(entry => entry.date === key).forEach(entry => {
         box.classList.add('has');
         const button = el('button', undefined, 'day-entry');
@@ -124,6 +140,29 @@
       grid.append(box);
     }
   }
+  function showSelectedDay() {
+    $('selected-day').hidden = !selectedDate || view !== 'calendar';
+    if (!selectedDate) return;
+    $('selected-day-title').textContent = 'Sightings on ' + formatDate(selectedDate);
+    const entries = dated.filter(entry => entry.date === selectedDate && matches(entry));
+    $('selected-day-results').replaceChildren(...entries.map(card));
+    if (!entries.length) $('selected-day-results').append(el('p', 'No sightings match this date and these search filters. Flight tracks are shown independently of brand filters.', 'small'));
+  }
+  function selectDate(date) {
+    document.dispatchEvent(new CustomEvent('sighting-date-selected', {detail:{date}}));
+  }
+  document.addEventListener('sighting-date-selected', event => {
+    selectedDate = event.detail.date || '';
+    const url = new URL(location.href);
+    if (selectedDate) url.searchParams.set('date', selectedDate); else url.searchParams.delete('date');
+    history.replaceState(null, '', url);
+    document.querySelectorAll('.day[data-date]').forEach(day => {
+      const selected = day.dataset.date === selectedDate;
+      day.classList.toggle('selected', selected);
+      day.querySelector('.day-select').setAttribute('aria-pressed', String(selected));
+    });
+    showSelectedDay();
+  });
   function render() {
     const filtered = data.entries.filter(matches);
     const entries = filtered.filter(entry => entry.date);
@@ -141,6 +180,7 @@
     const count = view === 'calendar' ? entries.filter(entry => entry.date.startsWith($('month').value)).length : entries.length;
     $('result-count').textContent = `${count} dated sighting${count === 1 ? '' : 's'}${view === 'calendar' ? ' this month' : ''} · one entry per brand per day`;
     drawCalendar(entries);
+    showSelectedDay();
   }
   function setView(nextView) {
     view = nextView;
@@ -173,5 +213,6 @@
     const legacy = location.hash.match(/^#(\d{4}-\d{2}-\d{2}):(.+)$/);
     if (legacy) {try {openEvidence(data.entries.find(entry => entry.date===legacy[1] && entry.brand===decodeURIComponent(legacy[2])),false);} catch { /* malformed fragment */ }}
   }
-  render(); fromHash(); window.addEventListener('hashchange',fromHash);
+  if (selectedDate) setView('calendar'); else render();
+  fromHash(); window.addEventListener('hashchange',fromHash);
 })();
