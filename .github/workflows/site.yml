@@ -1,0 +1,26 @@
+name: validate-and-build
+# Vercel serves the committed site/ folder (push to main = production).
+# This workflow validates data and rebuilds site/ on PRs, and fails if the
+# committed site/ is stale so what merges is exactly what Vercel serves.
+on:
+  pull_request:
+  push: {branches: [main]}
+permissions: {contents: read}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python scripts/validate.py
+      - run: python scripts/build_all.py
+      - name: site/ must match a fresh build
+        run: |
+          if ! git diff --quiet -- site; then
+            git --no-pager diff --stat -- site
+            echo "::error::site/ is out of date. Run 'python scripts/build_all.py' and commit the result."
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with: {name: site, path: site}

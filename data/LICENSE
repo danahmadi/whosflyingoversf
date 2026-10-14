@@ -1,0 +1,4 @@
+The data in this directory (sightings.csv, brands.json, flights.json) is licensed under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+Attribution: "Who's flying over SF? (whosflyingoversf.com)". Flight data is derived from the adsb.lol open archive (ODbL); individual sources are linked per row.
