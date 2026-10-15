@@ -13,7 +13,10 @@ No Node app, build service or environment variables. Vercel serves the committed
 ```sh
 python3 scripts/build_all.py
 python3 -m unittest discover -s tests -v
+node --test tests/test_controls.cjs
 ```
+
+Node 22+ runs the browser-control regression checks with built-in test APIs; no npm install is needed. It is not part of the site build.
 
 Commit the data and generated `site/` changes together. CI validates data, runs regression tests, rebuilds the pages and rejects stale generated files. Vercel creates PR previews and deploys `main` to production. CI must pass before merging; Vercel's build itself does not run Python validation.
 
