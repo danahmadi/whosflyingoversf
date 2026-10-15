@@ -60,7 +60,8 @@
       report.href = 'https://github.com/danahmadi/whosflyingoversf/issues/new?' + new URLSearchParams({template:'sighting.yml',date:flight.date});content.append(report);
       L.polyline(flight.track,{pane:'tracks',color:trackColors[index % trackColors.length],weight:focused ? 2 : 1.5,opacity:focused ? .85 : .6,smoothFactor:1.2}).bindPopup(content).addTo(lines);
     });
-    $('map-status').textContent = invalid ? 'Choose an end date on or after the start date.' : selected.length ? `${selected.length} candidate track${selected.length === 1 ? '' : 's'} across ${new Set(selected.map(flight => flight.date)).size} date${new Set(selected.map(flight => flight.date)).size === 1 ? '' : 's'}.` : embedded && selectedDay ? selectedBrand ? 'No tracks for this brand on the selected date. Try all dates or another brand.' : 'No recorded tracks for this date. A sighting can still be valid without a track.' : 'No tracks match these filters. Try a wider date range.';
+    const dateCount = new Set(selected.map(flight => flight.date)).size;
+    $('map-status').textContent = invalid ? 'Choose an end date on or after the start date.' : selected.length ? `${selected.length} candidate track${selected.length === 1 ? '' : 's'} across ${dateCount} date${dateCount === 1 ? '' : 's'}.` : embedded && selectedDay ? selectedBrand ? 'No tracks for this brand on the selected date. Try all dates or another brand.' : 'No recorded tracks for this date. A sighting can still be valid without a track.' : 'No tracks match these filters. Try a wider date range.';
     if (embedded) {
       updateDayLabel();
       map.invalidateSize();
@@ -93,7 +94,7 @@
       $('tail').replaceChildren(new Option('All tracked aircraft',''));
       [...new Set(flights.map(flight=>flight.tail))].sort().forEach(tail=>$('tail').append(new Option(tail,tail)));
       resetDates();
-      if (dateFromURL && /^\d{4}-\d{2}-\d{2}$/.test(dateFromURL)) { $('from').value=dateFromURL; $('to').value=dateFromURL; $('tracks').checked=true; }
+      if (selectedDay) { $('from').value=selectedDay; $('to').value=selectedDay; $('tracks').checked=true; }
       $('map-filters').hidden=false;
       }
       draw();

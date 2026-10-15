@@ -23,6 +23,7 @@
   };
   let view = 'calendar';
   const dated = data.entries.filter(entry => entry.date);
+  const undated = data.entries.filter(entry => !entry.date);
   let selectedDate = new URLSearchParams(location.search).get('date') || '';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = '';
   const trackDates = new Set(data.flights.map(flight => flight.date));
@@ -156,11 +157,8 @@
     showSelectedDay();
   });
   function render() {
-    const filtered = data.entries;
-    const entries = filtered.filter(entry => entry.date);
-    const undated = filtered.filter(entry => !entry.date);
-    $('results').replaceChildren(...entries.map(card));
-    if (!entries.length) {
+    $('results').replaceChildren(...dated.map(card));
+    if (!dated.length) {
       const empty = el('div', undefined, 'empty-state');
       empty.append(el('h2','No dated sightings yet.'),el('p','Report a banner you saw to start the archive.'),link('Report a sighting',reportURL({date:'',brand:'Unknown'})));
       $('results').append(empty);
@@ -168,9 +166,9 @@
     $('undated-results').replaceChildren(...undated.map(card));
     $('undated').hidden = !undated.length;
     $('undated').querySelector('summary').textContent = `Reports without a confirmed flight date (${undated.length})`;
-    const count = view === 'calendar' ? entries.filter(entry => entry.date.startsWith($('month').value)).length : entries.length;
+    const count = view === 'calendar' ? dated.filter(entry => entry.date.startsWith($('month').value)).length : dated.length;
     $('result-count').textContent = `${count} dated sighting${count === 1 ? '' : 's'}${view === 'calendar' ? ' this month' : ''} · one entry per brand per day`;
-    drawCalendar(entries);
+    drawCalendar(dated);
     showSelectedDay();
   }
   function setView(nextView) {
