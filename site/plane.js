@@ -36,11 +36,13 @@
     const ring = ([cy,radius,cz],i) => [Math.cos(i*Math.PI/4)*radius,cy,cz+Math.sin(i*Math.PI/4)*radius];
     for (let i=0;i<8;i++) face([ring(rings[r],i),ring(rings[r],i+1),ring(rings[r+1],i+1),ring(rings[r+1],i)],white);
   }
-  // High main wing, red tips, horizontal and vertical stabilizers.
-  box(-39,39,-10,1,6,7.6,white);
-  box(-39,-33,-10,1,6,7.8,red); box(33,39,-10,1,6,7.8,red);
-  box(-14,14,22,28,2,3,white);
-  box(-14,-10,22,28,2,3.2,red); box(10,14,22,28,2,3.2,red);
+  // Paint adjoining sections of the wing, not overlapping boxes. A full-span
+  // white box can sort in front of the far red tip as the plane banks, making
+  // the markings appear to swap sides. Keep both tips fixed in model space.
+  box(-33,33,-10,1,6,7.6,white);
+  box(-39,-33,-10,1,6,7.6,red); box(33,39,-10,1,6,7.6,red);
+  box(-10,10,22,28,2,3,white);
+  box(-14,-10,22,28,2,3,red); box(10,14,22,28,2,3,red);
   face([[-.7,17,3],[-.7,25,15],[-.7,29,14],[-.7,30,3]],red);
   face([[.7,17,3],[.7,25,15],[.7,29,14],[.7,30,3]],red);
   face([[-.7,25,15],[.7,25,15],[.7,29,14],[-.7,29,14]],white);
