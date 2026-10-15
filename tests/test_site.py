@@ -21,6 +21,14 @@ class ScriptParser(HTMLParser):
         if tag=='script':self.scripts+=1
 
 class ArchiveTests(unittest.TestCase):
+    def test_generated_pages_keep_vercel_analytics(self):
+        for path in (ROOT/'site').glob('*.html'):
+            with self.subTest(page=path.name):
+                html=path.read_text()
+                self.assertEqual(html.count('<script defer src="/_vercel/insights/script.js"></script>'),1)
+                self.assertEqual(html.count('window.va = window.va || function ()'),1)
+                self.assertIn('(window.vaq = window.vaq || []).push(arguments)',html)
+
     def test_reposts_do_not_create_extra_days(self):
         data=load_data()
         paid={item['date']:item for item in data['entries'] if item['brand']=='Paid' and item['date']}

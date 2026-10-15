@@ -36,9 +36,15 @@
     return Math.max(2.5, 600 / Math.pow(2, 1.6 * (map.getZoom() - defaultZoom)));
   }
   function draw() {
-    const invalid = !embedded && $('from').value && $('to').value && $('from').value > $('to').value;
-    const matchingDates = embedded ? flights.filter(flight => !selectedDay || flight.date === selectedDay) : invalid ? [] : flights.filter(flight => (!$('from').value || flight.date >= $('from').value) && (!$('to').value || flight.date <= $('to').value) && (!$('tail').value || flight.tail === $('tail').value));
-    const selected = matchingDates.filter(flight => !selectedBrand || flight.candidates.includes(selectedBrand));
+    const from = embedded ? selectedDay : $('from').value;
+    const to = embedded ? selectedDay : $('to').value;
+    const tail = embedded ? '' : $('tail').value;
+    const invalid = from && to && from > to;
+    const selected = invalid ? [] : flights.filter(flight =>
+      (!from || flight.date >= from) && (!to || flight.date <= to) &&
+      (!tail || flight.tail === tail) &&
+      (!selectedBrand || flight.candidates.includes(selectedBrand))
+    );
     $('brand-context').hidden = !selectedBrand;
     $('brand-context').textContent = selectedBrand ? `Tracks from days ${names[selectedBrand]} was sighted. Aircraft match unconfirmed.` : '';
     if (heat) map.removeLayer(heat);

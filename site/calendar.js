@@ -24,6 +24,11 @@
   let view = 'calendar';
   const dated = data.entries.filter(entry => entry.date);
   const undated = data.entries.filter(entry => !entry.date);
+  const byDate = new Map();
+  for (const entry of dated) {
+    if (!byDate.has(entry.date)) byDate.set(entry.date, []);
+    byDate.get(entry.date).push(entry);
+  }
   let selectedDate = new URLSearchParams(location.search).get('date') || '';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = '';
   const trackDates = new Set(data.flights.map(flight => flight.date));
@@ -100,7 +105,7 @@
     content.append(el('p', `${brand.label}${entry.brand === 'Pylon' ? ' · drone airship' : ''} · ${entry.sources.length} source${entry.sources.length === 1 ? '' : 's'}`, 'sighting-brand'));
     article.append(date, content); return article;
   }
-  function drawCalendar(entries) {
+  function drawCalendar() {
     const grid = $('grid'); grid.replaceChildren();
     const value = $('month').value;
     if (!value) { grid.append(el('p','No dated sightings yet.')); return; }
@@ -123,7 +128,7 @@
         selectDate(key);
         if (window.matchMedia('(max-width: 1000px)').matches) $('map-title').scrollIntoView({block:'start'});
       });
-      entries.filter(entry => entry.date === key).forEach(entry => {
+      (byDate.get(key) || []).forEach(entry => {
         box.classList.add('has');
         const button = el('button', undefined, 'day-entry');
         button.setAttribute('aria-label', `${data.brands[entry.brand].label}, ${formatDate(key)}. View evidence.`);
@@ -137,7 +142,7 @@
     $('selected-day').hidden = !selectedDate || view !== 'calendar';
     if (!selectedDate) return;
     $('selected-day-title').textContent = 'Sightings on ' + formatDate(selectedDate);
-    const entries = dated.filter(entry => entry.date === selectedDate);
+    const entries = byDate.get(selectedDate) || [];
     $('selected-day-results').replaceChildren(...entries.map(card));
     if (!entries.length) $('selected-day-results').append(el('p', 'No sighting reports for this date yet.', 'small'));
   }
@@ -157,18 +162,9 @@
     showSelectedDay();
   });
   function render() {
-    $('results').replaceChildren(...dated.map(card));
-    if (!dated.length) {
-      const empty = el('div', undefined, 'empty-state');
-      empty.append(el('h2','No dated sightings yet.'),el('p','Report a banner you saw to start the archive.'),link('Report a sighting',reportURL({date:'',brand:'Unknown'})));
-      $('results').append(empty);
-    }
-    $('undated-results').replaceChildren(...undated.map(card));
-    $('undated').hidden = !undated.length;
-    $('undated').querySelector('summary').textContent = `Reports without a confirmed flight date (${undated.length})`;
     const count = view === 'calendar' ? dated.filter(entry => entry.date.startsWith($('month').value)).length : dated.length;
     $('result-count').textContent = `${count} dated sighting${count === 1 ? '' : 's'}${view === 'calendar' ? ' this month' : ''} · one entry per brand per day`;
-    drawCalendar(dated);
+    drawCalendar();
     showSelectedDay();
   }
   function setView(nextView) {
@@ -178,6 +174,16 @@
     $('calendar-view').setAttribute('aria-pressed', String(view === 'calendar'));
     render();
   }
+  // Archive data is immutable; month and view changes update the calendar and selection.
+  $('results').replaceChildren(...dated.map(card));
+  if (!dated.length) {
+    const empty = el('div', undefined, 'empty-state');
+    empty.append(el('h2','No dated sightings yet.'),el('p','Report a banner you saw to start the archive.'),link('Report a sighting',reportURL({date:'',brand:'Unknown'})));
+    $('results').append(empty);
+  }
+  $('undated-results').replaceChildren(...undated.map(card));
+  $('undated').hidden = !undated.length;
+  $('undated').querySelector('summary').textContent = `Reports without a confirmed flight date (${undated.length})`;
   $('viewbar').hidden = false;
   $('list-view').addEventListener('click', () => setView('list'));
   $('calendar-view').addEventListener('click', () => setView('calendar'));
