@@ -4,7 +4,7 @@ A community archive of the banners above San Francisco: the words people saw, th
 
 The homepage has a calendar, sightings list and flight map. Selecting a calendar date filters the map to that day and lists its sightings; dates with recorded tracks have a dot. Share a filtered view with `/?date=YYYY-MM-DD`, or reset the map to all dates. Both maps can filter to tracks recorded on days a selected brand was sighted. Brand filters are saved in `?brand=Monaco` and can combine with a selected date; they do not confirm which aircraft carried a banner or where the advertiser intended to target. Reports without an established flight date stay in a separate section. The flight map shows candidate banner-tow tracks; a brand seen on the same day is a lead, not a confirmed aircraft match.
 
-The map opens at zoom 11 with thin routes over a subdued density layer. Individual routes are visible by default; the full map can hide them with its track checkbox. On devices with a mouse, a small 3D Cessna follows the cursor in wide repeated passes. The footer has a pause control, and the animation stops for reduced-motion preferences and background tabs. The plane is rendered locally in Canvas with no model download or additional library.
+The map opens at zoom 11 with thin routes over a blue-to-red heatmap calibrated to reserve warm colors for the densest recorded positions. Individual routes are visible by default; the full map can hide them with its track checkbox. On devices with a mouse, a small 3D Cessna follows the cursor in wide repeated passes. The footer has a pause control, and the animation stops for reduced-motion preferences and background tabs. The plane is rendered locally in Canvas with no model download or additional library.
 
 ## Build and contribute
 
