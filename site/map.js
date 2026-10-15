@@ -36,15 +36,16 @@
     $('brand-context').hidden = !selectedBrand;
     $('brand-context').textContent = selectedBrand ? `Tracks from days ${names[selectedBrand]} was sighted. Aircraft match unconfirmed.` : '';
     if (heat) map.removeLayer(heat);
-    // Keep density as a quiet backdrop; the routes carry the detail.
-    heat = L.heatLayer((embedded && selectedDay ? [] : selected).flatMap(flight => flight.track.map(point => [...point, 0.15])), {
-      pane: 'heat', radius: 5, blur: 8, maxZoom: 13, max: 12, minOpacity: 0.025,
-      gradient: {0.25: '#a9c4c8', 0.55: '#79a5aa', 0.8: '#c1ad86', 1: '#b78865'}
+    // Preserve the classic heat palette, but require substantially more
+    // overlapping observations before a location reaches red.
+    heat = L.heatLayer((embedded && selectedDay ? [] : selected).flatMap(flight => flight.track.map(point => [...point, 0.5])), {
+      pane: 'heat', radius: 6, blur: 8, maxZoom: 14, max: 100, minOpacity: 0.005,
+      gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1: 'red'}
     }).addTo(map);
     lines.clearLayers();
     const focused = (embedded && !!selectedDay) || selected.length <= 8;
     // Cap the opacity of the whole overview so overlapping routes stay translucent.
-    map.getPane('tracks').style.opacity = focused ? 1 : .45;
+    map.getPane('tracks').style.opacity = focused ? 1 : .16;
     if (embedded || $('tracks').checked) selected.forEach((flight, index) => {
       const content = el('div','');
       content.append(el('strong',`${flight.date} · ${flight.tail}`));
@@ -71,7 +72,7 @@
       if (!map) {
         map=L.map('map', {preferCanvas:true}).setView(defaultCenter,defaultZoom);
         map.createPane('heat'); map.getPane('heat').style.zIndex = 410;
-        map.getPane('heat').style.opacity = .32; map.getPane('heat').style.pointerEvents = 'none';
+        map.getPane('heat').style.opacity = .8; map.getPane('heat').style.pointerEvents = 'none';
         map.createPane('tracks'); map.getPane('tracks').style.zIndex = 420;
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
         lines=L.layerGroup().addTo(map);
