@@ -69,5 +69,12 @@
     "logo": "logos/pylon.png",
     "color": "#c62828",
     "description": "Customer-support software. The reported aircraft was a drone airship."
+  },
+  "Vercel": {
+    "match": "Vercel",
+    "url": "https://vercel.com",
+    "logo": "logos/vercel.png",
+    "color": "#000",
+    "description": "A platform for deploying web apps and AI agents. On Oct 15, 2026 it flew a Buoyant Aero advertising blimp over San Francisco for Vercel Ship SF."
   }
 }
