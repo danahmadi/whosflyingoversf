@@ -64,7 +64,7 @@ def load_data():
     entries = sorted(entries.values(), key=lambda x: (x['date'], x['brand']), reverse=True)
     by_day = defaultdict(list)
     for item in entries:
-        if item['date'] and item['brand'] not in ('Unknown','Pylon'): by_day[item['date']].append(item['brand'])
+        if item['date'] and item['brand'] not in ('Unknown','Pylon','Vercel'): by_day[item['date']].append(item['brand'])
     flights = []
     for original in json.loads((ROOT / 'data/flights.json').read_text()):
         # Same-day reports are leads, never a confirmed advertiser-to-aircraft match.
@@ -106,4 +106,4 @@ def evidence_card(item, brands):
     photo = any(s['photo'] for s in item['sources'])
     note = 'Photo linked' if photo else ('Reader report' if all(not s['url'] for s in item['sources']) else 'Text report')
     sources = ''.join(f'<li>{e(s["source"])}{(" · @"+e(s["author"])) if s["author"] else ""}: {e(s["note"])}'+(f' <a href="{e(s["url"])}" target="_blank" rel="noopener noreferrer">Open source</a>' if s['url'] else '')+'</li>' for s in item['sources'])
-    return f'''<article class="sighting" id="sighting-{item['id']}"><div class="sighting-date">{e(date_text)}<span>{note}</span></div><div><h3>{e(slogan)}</h3><p class="sighting-brand">{e(brand['label'])}{' · drone airship' if item['brand']=='Pylon' else ''}</p><details><summary>Read {len(item['sources'])} source{'s' if len(item['sources'])!=1 else ''}</summary><ul class="source-list">{sources}</ul></details></div></article>'''
+    return f'''<article class="sighting" id="sighting-{item['id']}"><div class="sighting-date">{e(date_text)}<span>{note}</span></div><div><h3>{e(slogan)}</h3><p class="sighting-brand">{e(brand['label'])}{' · drone airship' if item['brand']=='Pylon' else ' · blimp' if item['brand']=='Vercel' else ''}</p><details><summary>Read {len(item['sources'])} source{'s' if len(item['sources'])!=1 else ''}</summary><ul class="source-list">{sources}</ul></details></div></article>'''
