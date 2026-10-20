@@ -76,5 +76,12 @@
     "logo": "logos/vercel.png",
     "color": "#000",
     "description": "A platform for deploying web apps and AI agents. On Oct 15, 2026 it flew a Buoyant Aero advertising blimp over San Francisco for Vercel Ship SF."
+  },
+  "HappyRobot": {
+    "match": "HappyRobot",
+    "url": "https://happyrobot.ai",
+    "logo": "logos/happyrobot.png",
+    "color": "#000",
+    "description": "An AI voice-agent platform. On Oct 6, 2026 it flew a Buoyant Aero advertising blimp over San Francisco for SF Tech Week."
   }
 }
