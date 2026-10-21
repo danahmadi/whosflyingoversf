@@ -4,13 +4,25 @@ V = json.loads((ROOT/'data/vendors.json').read_text())
 def vendor(v):
     links = ' · '.join(f'<a href="{e(url)}">{e(urlparse(url).netloc.removeprefix("www."))}</a>' for url in v['sources'])
     return f'<article class="vendor"><h3><a href="{e(v["url"])}">{e(v["name"])}</a></h3><p class="small">{e(v["location"])}</p><p>{e(v["services"])}</p><p class="small">{e(v["notes"])}</p><p class="small">Sources: {links}</p></article>'
+def featured_vendor(v):
+    return f'''<section class="featured-vendor" aria-label="Featured campaign planning service">
+<p class="featured-label">Featured · Campaign planning</p>
+<h2><a href="{e(v['url'])}">{e(v['name'])}</a></h2>
+<p class="small">{e(v['location'])}</p>
+<p>{e(v['services'])}</p>
+<p>{e(v['notes'])}</p>
+<p class="featured-actions"><a class="act" href="{e(v['url'])}">Plan a campaign with {e(v['name'])} ↗</a><a href="#operators">Compare other providers</a></p>
+<p class="small featured-evidence">{e(v['evidence'])}</p>
+</section>'''
 # Keep the core operator list; the blimp rewards anecdote is unrelated to booking a banner.
 vendors = [v for v in V['vendors'] if v['name'] != 'Buoyant Aero']
 body = hero('Book a banner', 'Ask about time over the city, transit and the cost of making the banner. Those details can change the quote.')
-body += '''<main id="content" class="reading"><figure class="photo"><img src="/assets/yippee-ki-yay.jpg" alt="Small planes tow red letter banners across the sky" width="1023" height="770"><figcaption>Letter banners outside SF. <a href="https://www.flickr.com/photos/40646519@N00/635938704">“Yippee Ki Yay” by Joe Shlabotnik</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>. Cropped for this page.</figcaption></figure>
+body += '<main id="content" class="reading">'
+body += ''.join(featured_vendor(v) for v in V['featured'])
+body += '''<figure class="photo"><img src="/assets/yippee-ki-yay.jpg" alt="Small planes tow red letter banners across the sky" width="1023" height="770"><figcaption>Letter banners outside SF. <a href="https://www.flickr.com/photos/40646519@N00/635938704">“Yippee Ki Yay” by Joe Shlabotnik</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>. Cropped for this page.</figcaption></figure>
 <section><h2>Start with a short brief</h2><p>Tell the operator the date, the area you want to reach and the exact words or artwork. Ask for a quote that separates these items:</p><ul><li><strong>Time above SF and time in transit.</strong> Monaco's CEO described a six-hour booking with up to two hours between the airport and the city.</li><li><strong>The banner itself.</strong> Individual letters and a printed billboard have different production costs. Ask about character limits, reuse and lead time.</li><li><strong>Weather and rescheduling.</strong> Ask what happens if fog, wind or airspace restrictions prevent the flight.</li><li><strong>Proof of the flight.</strong> Ask whether you will receive a flight log or photos, and who handles any changes on the day.</li></ul><p>Keep the message short enough to read from the ground. Give the operator a phone-sized mockup as well as the full artwork.</p></section>
 <section><h2>Two published price references</h2><p>Monaco's Sam Blond reported about <strong>$6,000 for six flight hours</strong>. Aerial Messages lists <strong>$2,550 for two hours</strong> and lower hourly rates for larger bookings. Neither is a quote for your flight.</p><p><a href="https://www.linkedin.com/posts/sam-blond-791026b_the-monaco-plane-economics-and-impact-activity-7468079804244959232-pCx2">Monaco's account</a> · <a href="https://www.aerialmessages.com/commercial-advertising-rates/">Aerial Messages rates</a></p></section>
-<section><h2>Operators and brokers to contact</h2><p>These companies advertise Bay Area service. We have not booked or evaluated them. Ask each company who will operate the aircraft and whether it can serve your date and location.</p>'''
+<section id="operators"><h2>Other operators and brokers to contact</h2><p>These companies advertise Bay Area service. We have not booked or evaluated them. Ask each company who will operate the aircraft and whether it can serve your date and location.</p>'''
 body += ''.join(vendor(v) for v in vendors)
 body += '''</section><aside class="contribute"><h2>Keep this list useful</h2><p>Booked a flight, found a stale listing or have a current quote to share? <a href="mailto:hello@sfbannerplanes.com?subject=Banner%20operator%20information">Send a correction</a>. We don't rank operators by how often their aircraft appear on the map.</p></aside></main>'''
 write('fly.html', page('Book a banner', 'Questions to ask before booking a banner plane over San Francisco, with published pricing and operator contacts.', '/fly', body))
