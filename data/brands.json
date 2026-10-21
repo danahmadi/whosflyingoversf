@@ -83,5 +83,12 @@
     "logo": "logos/happyrobot.png",
     "color": "#000",
     "description": "An AI voice-agent platform. On Oct 6, 2026 it flew a Buoyant Aero advertising blimp over San Francisco for SF Tech Week."
+  },
+  "Hyperbound": {
+    "match": "Hyperbound",
+    "url": "https://www.hyperbound.ai",
+    "logo": "logos/hyperbound.png",
+    "color": "#000",
+    "description": "An AI sales roleplay and coaching platform for revenue teams."
   }
 }
