@@ -3,7 +3,7 @@
 A community archive of banner sightings above San Francisco.
 
 - [Sightings](https://whosflyingoversf.com/): Dated reports and separate undated reports.
-- [Method](https://whosflyingoversf.com/stats): Coverage limits, dates and assumptions.
+- [Stats and method](https://whosflyingoversf.com/stats): Estimated flight hours, spend, fuel and CO2 ranges; coverage limits, dates and assumptions.
 - [Map](https://whosflyingoversf.com/map): Candidate aircraft tracks, not confirmed advertiser matches.
 - [Source data](https://github.com/danahmadi/whosflyingoversf/tree/main/data): CSV and JSON; CC BY 4.0.
 

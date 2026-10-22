@@ -79,7 +79,7 @@ def load_data():
 
 
 def header(current):
-    pages = [('/', 'Sightings'), ('/map', 'Flight map'), ('/stats', 'About the data'), ('/fly', 'Book a banner')]
+    pages = [('/', 'Sightings'), ('/map', 'Flight map'), ('/stats', 'Stats'), ('/fly', 'Book a banner')]
     links = ''.join(f'<a href="{url}"'+(' aria-current="page"' if url==current else '')+f'>{label}</a>' for url,label in pages)
     return f'<a class="skip" href="#content">Skip to content</a><header class="top"><a class="wm" href="/">Who\'s flying over SF?</a><nav aria-label="Main">{links}</nav><a class="act" href="{REPORT}">Report a sighting</a></header>'
 
