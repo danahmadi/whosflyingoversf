@@ -13,7 +13,7 @@ No Node app, build service or environment variables. Vercel serves the committed
 ```sh
 python3 scripts/build_all.py
 python3 -m unittest discover -s tests -v
-node --test tests/test_controls.cjs
+node --test tests/*.cjs
 ```
 
 Node 22+ runs the browser-control regression checks with built-in test APIs; no npm install is needed. It is not part of the site build.
@@ -54,3 +54,11 @@ The site publishes dated sighting counts, source links, and clearly labeled camp
 Code: MIT. Data in `data/`: CC BY 4.0. Photos retain their original licenses; credits appear on the site and in `site/assets/credits.json`. Brand marks belong to their owners.
 
 Share artwork and favicon assets are checked in. To regenerate them, install Pillow and run `python3 scripts/make_og_image.py` and `python3 scripts/make_favicon.py`; these are separate from the standard-library site build.
+
+### Outbound referral links
+
+Rendered external HTTP(S) website links receive `utm_source=whosflyingoversf.com`, including links added by sighting dialogs, map popups and map credits. The build decorates static anchors; `site/outbound.js` covers dynamically inserted or updated anchors. URL fixtures test the same policy in Python and JavaScript. Source data and asset requests are not rewritten.
+
+An existing `utm_source` (including empty or differently cased keys) wins and is left byte-for-byte intact. Other query parameters and fragments retain their original encoding and values. Internal links, domain aliases, mail/phone links, downloads and common asset extensions are excluded; GitHub `/blob/` links are website viewers.
+
+Known signature/auth/expiry query keys are conservatively excluded to avoid invalidating signed URLs. Custom or path-based signatures cannot be identified reliably from a URL alone: mark those anchors `data-no-referral`. This also provides an explicit opt-out for extensionless assets; use `download` for actual download links. No signed outbound website URLs were found in the current link inventory.
