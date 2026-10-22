@@ -88,6 +88,16 @@ class ArchiveTests(unittest.TestCase):
             self.assertIn('2026-11-01',html)
             self.assertIn('Latest report: Nov 1, 2026',html)
 
+class StatsPageTests(unittest.TestCase):
+    def test_stats_page_shows_fuel_and_co2_estimates_and_is_linked(self):
+        html=(ROOT/'site/stats.html').read_text()
+        self.assertIn('Avgas (gallons)',html)
+        self.assertIn('CO₂ (tonnes)',html)
+        self.assertIn('Total (banner planes)',html)
+        for page in ('index.html','map.html','fly.html','404.html'):
+            with self.subTest(page=page):
+                self.assertIn('<a href="/stats">Stats</a>',(ROOT/'site'/page).read_text())
+
 class FlightTests(unittest.TestCase):
     def make_trace(self):
         timestamp=datetime(2026,10,1,16,tzinfo=timezone.utc).timestamp()
