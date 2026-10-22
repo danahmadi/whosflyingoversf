@@ -25,7 +25,7 @@ Run:
 ```sh
 python3 scripts/build_all.py
 python3 -m unittest discover -s tests -v
-node --test tests/test_controls.cjs
+node --test tests/*.cjs
 ```
 
 Commit the source data and regenerated files. Review the Vercel preview, including the evidence for any corrected dates. Do not merge while validation is failing. Source changes and generated output must agree.

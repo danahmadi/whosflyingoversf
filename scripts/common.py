@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import date
 from pathlib import Path
 from urllib.parse import urlencode
+from outbound import decorate_html
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / 'site'
@@ -24,6 +25,8 @@ def json_text(value):
 def write(path, text):
     dest = SITE / path
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.suffix == '.html':
+        text = decorate_html(text)
     dest.write_text(text, encoding='utf-8')
 
 
@@ -89,6 +92,7 @@ def page(title, description, path, body, scripts='', extra_head=''):
   window.va = window.va || function () {{ (window.vaq = window.vaq || []).push(arguments); }};
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/outbound.js"></script>
 <title>{e(full_title)}</title><meta name="description" content="{e(description)}">
 <link rel="canonical" href="{ORIGIN}{path}"><meta property="og:type" content="website"><meta property="og:title" content="{e(full_title)}"><meta property="og:description" content="{e(description)}"><meta property="og:url" content="{ORIGIN}{path}"><meta property="og:image" content="{ORIGIN}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="A banner plane above the San Francisco skyline"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{e(full_title)}"><meta name="twitter:description" content="{e(description)}"><meta name="twitter:image" content="{ORIGIN}/og.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="alternate icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/favicon-180.png"><link rel="preload" href="/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/style.css"><meta name="theme-color" content="#E9EDF0">{extra_head}</head>
