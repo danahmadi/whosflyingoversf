@@ -1,10 +1,11 @@
 {
-  "featured": [
+  "featured": [],
+  "vendors": [
     {
       "name": "FlyVerto",
       "url": "https://flyverto.com/",
       "location": "San Francisco Bay Area · Campaign broker",
-      "services": "Want help putting a banner campaign together? FlyVerto offers creative guidance, independent operator sourcing, banner production coordination and a report of what flew.",
+      "services": "Creative guidance, independent operator sourcing, banner production coordination and delivery reporting",
       "notes": "Pricing is by written quote, with time over your target, transit, production and coordination itemized. Dates and routes need operator acceptance; a quote request does not reserve a flight.",
       "evidence": "Based on FlyVerto’s published service and quote terms, checked October 20, 2026. We have not booked or evaluated the service.",
       "sources": [
@@ -12,9 +13,7 @@
         "https://flyverto.com/pricing",
         "https://flyverto.com/how-quotes-work"
       ]
-    }
-  ],
-  "vendors": [
+    },
     {
       "name": "Aerial Advertising Services",
       "url": "https://aerialadservices.com/",
