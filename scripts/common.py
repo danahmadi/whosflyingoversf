@@ -92,6 +92,7 @@ def page(title, description, path, body, scripts='', extra_head=''):
   window.va = window.va || function () {{ (window.vaq = window.vaq || []).push(arguments); }};
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/analytics.js"></script>
 <script defer src="/outbound.js"></script>
 <title>{e(full_title)}</title><meta name="description" content="{e(description)}">
 <link rel="canonical" href="{ORIGIN}{path}"><meta property="og:type" content="website"><meta property="og:title" content="{e(full_title)}"><meta property="og:description" content="{e(description)}"><meta property="og:url" content="{ORIGIN}{path}"><meta property="og:image" content="{ORIGIN}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="A banner plane above the San Francisco skyline"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{e(full_title)}"><meta name="twitter:description" content="{e(description)}"><meta name="twitter:image" content="{ORIGIN}/og.png">
