@@ -62,3 +62,7 @@ Rendered external HTTP(S) website links receive `utm_source=whosflyingoversf.com
 An existing `utm_source` (including empty or differently cased keys) wins and is left byte-for-byte intact. Other query parameters and fragments retain their original encoding and values. Internal links, domain aliases, mail/phone links, downloads and common asset extensions are excluded; GitHub `/blob/` links are website viewers.
 
 Known signature/auth/expiry query keys are conservatively excluded to avoid invalidating signed URLs. Custom or path-based signatures cannot be identified reliably from a URL alone: mark those anchors `data-no-referral`. This also provides an explicit opt-out for extensionless assets; use `download` for actual download links. No signed outbound website URLs were found in the current link inventory.
+
+### Analytics
+
+`site/analytics.js` loads GA4 on the HTTPS production domain only and respects Global Privacy Control and Do Not Track. It retains campaign parameters, strips other query parameters and fragments, and reduces referrers to their origin. Google signals and advertising personalization are disabled. Keep enhanced measurement off in the GA4 web stream so automatic events do not bypass this URL handling. Vercel Analytics remains separate.
