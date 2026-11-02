@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 ROOT=Path(__file__).resolve().parents[1]
 PT=ZoneInfo('America/Los_Angeles')
 BOX=(37.69,37.84,-122.54,-122.34)
-TAILS={'aa3b5a':'N7589F','a783b4':'N5832J','aaec64':'N8025T','a06bba':'N126TW','ad9518':'N97413','a2ca97':'N2792P'}
+TAILS={'aa3b5a':'N7589F','a783b4':'N5832J','aaec64':'N8025T','a06bba':'N126TW','ad9518':'N97413','a2ca97':'N2792P','a54447':'N4388A'}
 MAX_GAP=120  # Coverage gaps are unknown time, not observed flight time.
 
 def airborne(point):return isinstance(point[3],(int,float)) and point[3]>0 and isinstance(point[4],(int,float)) and point[4]>0
