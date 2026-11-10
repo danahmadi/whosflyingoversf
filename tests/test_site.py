@@ -118,6 +118,24 @@ class FlightTests(unittest.TestCase):
         trace['trace']=[p for p in trace['trace'] if not 45*60<=p[0]<=75*60]
         self.assertEqual(candidates(trace,'aa3b5a'),[])
 
+    def make_ads_r_trace(self):
+        # ADS-R/TIS-B relays (e.g. hex a783b4) can report altitude as the literal
+        # string 'ground' for an entire flight, with no numeric reading at all.
+        timestamp=datetime(2026,11,9,22,tzinfo=timezone.utc).timestamp()
+        points=[[minute*60,37.77,-122.43,'ground',46] for minute in range(0,91)]
+        return dict(timestamp=timestamp,trace=points)
+
+    def test_ground_with_speed_is_treated_as_airborne_with_unknown_altitude(self):
+        result=candidates(self.make_ads_r_trace(),'a783b4')
+        self.assertEqual(len(result),1)
+        self.assertEqual(result[0]['hours_over_sf'],1.5)
+        self.assertIsNone(result[0]['median_alt_ft'])
+
+    def test_ground_with_zero_speed_is_not_airborne(self):
+        trace=self.make_ads_r_trace()
+        trace['trace']=[[t,lat,lon,alt,0] for t,lat,lon,alt,_ in trace['trace']]
+        self.assertEqual(candidates(trace,'a783b4'),[])
+
     def test_empty_input_preserves_existing_output(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);out=root/'flights.json';out.write_text('["keep"]')

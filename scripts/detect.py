@@ -18,7 +18,17 @@ BOX=(37.69,37.84,-122.54,-122.34)
 TAILS={'aa3b5a':'N7589F','a783b4':'N5832J','aaec64':'N8025T','a06bba':'N126TW','ad9518':'N97413','a2ca97':'N2792P','a54447':'N4388A'}
 MAX_GAP=120  # Coverage gaps are unknown time, not observed flight time.
 
-def airborne(point):return isinstance(point[3],(int,float)) and point[3]>0 and isinstance(point[4],(int,float)) and point[4]>0
+def numeric(value):return isinstance(value,(int,float))
+
+# ADS-R/TIS-B relayed positions (no onboard ADS-B altitude encoder in range) report
+# altitude as the literal string 'ground' for the whole flight, not just while parked.
+# A reported groundspeed is the only signal available then, so treat it as airborne;
+# real stationary/taxiing aircraft report speed 0 and still split the chunk below.
+# median_alt_ft is left null (see candidates()) rather than inventing a number for
+# sessions built only from these relayed, altitude-less points.
+def airborne(point):
+    if not (numeric(point[4]) and point[4]>0):return False
+    return point[3]>0 if numeric(point[3]) else point[3]=='ground'
 
 def in_sf(point):return BOX[0]<=point[1]<=BOX[1] and BOX[2]<=point[2]<=BOX[3]
 
@@ -37,14 +47,16 @@ def candidates(trace,hex_code):
         inside=[p for p in chunk if in_sf(p)]
         if len(inside)<2:continue
         seconds=sum(b[0]-a[0] for a,b in zip(chunk,chunk[1:]) if in_sf(a) and in_sf(b))
-        speed=statistics.median(p[4] for p in inside);alt=statistics.median(p[3] for p in inside)
-        if seconds and speed<85 and alt<3500:grouped[datetime.fromtimestamp(inside[0][0],PT).strftime('%Y-%m-%d')].append((chunk,inside,seconds))
+        speed=statistics.median(p[4] for p in inside);alts=[p[3] for p in inside if numeric(p[3])]
+        # Session altitude is unknown, not low, when every point reports 'ground'; don't filter on it.
+        if seconds and speed<85 and (not alts or statistics.median(alts)<3500):grouped[datetime.fromtimestamp(inside[0][0],PT).strftime('%Y-%m-%d')].append((chunk,inside,seconds))
     result=[]
     for day,segments in grouped.items():
         sf_seconds=sum(s[2] for s in segments)
         if sf_seconds<2700:continue
         points=[p for _,inside,_ in segments for p in inside]
-        result.append(dict(tail=TAILS[hex_code],hex=hex_code,date=day,start=datetime.fromtimestamp(points[0][0],PT).strftime('%H:%M'),end=datetime.fromtimestamp(points[-1][0],PT).strftime('%H:%M'),hours_over_sf=round(sf_seconds/3600,2),airborne_hours=round(sum(chunk[-1][0]-chunk[0][0] for chunk,_,_ in segments)/3600,2),median_kt=round(statistics.median(p[4] for p in points)),median_alt_ft=round(statistics.median(p[3] for p in points)),sessions=len(segments),track=[[round(p[1],4),round(p[2],4)] for p in points[::max(1,len(points)//1500)]]))
+        alts=[p[3] for p in points if numeric(p[3])]
+        result.append(dict(tail=TAILS[hex_code],hex=hex_code,date=day,start=datetime.fromtimestamp(points[0][0],PT).strftime('%H:%M'),end=datetime.fromtimestamp(points[-1][0],PT).strftime('%H:%M'),hours_over_sf=round(sf_seconds/3600,2),airborne_hours=round(sum(chunk[-1][0]-chunk[0][0] for chunk,_,_ in segments)/3600,2),median_kt=round(statistics.median(p[4] for p in points)),median_alt_ft=round(statistics.median(alts)) if alts else None,sessions=len(segments),track=[[round(p[1],4),round(p[2],4)] for p in points[::max(1,len(points)//1500)]]))
     return result
 
 def main():
