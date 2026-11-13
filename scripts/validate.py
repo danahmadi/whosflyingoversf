@@ -73,9 +73,13 @@ def validate(root=ROOT):
         identity=(str(tail),str(flight.get('date')))
         if identity in seen:fail(where,'duplicate aircraft/date')
         seen.add(identity)
-        for field in ('hours_over_sf','median_kt','median_alt_ft'):
+        for field in ('hours_over_sf','median_kt'):
             value=flight.get(field)
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<0:fail(where,f'invalid {field}')
+        # null means unknown: some ADS-R/TIS-B relays report no altitude at all (see scripts/detect.py);
+        # don't invent a number for those sessions, but still require a non-negative value when known.
+        alt=flight.get('median_alt_ft')
+        if alt is not None and (isinstance(alt,bool) or not isinstance(alt,(int,float)) or not math.isfinite(alt) or alt<0):fail(where,'invalid median_alt_ft')
         for field in ('start','end'):
             try:time.fromisoformat(flight.get(field,''))
             except (ValueError,TypeError):fail(where,f'invalid {field}')
